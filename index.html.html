@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sky Voyage | Web Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --card: #111118;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0eee8;
+    --muted: #888;
+    --accent1: #ff4d6d;
+    --accent2: #7b2fff;
+    --accent3: #00d4aa;
+    --accent4: #ffb347;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* --- noise overlay --- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* --- nav --- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,15,0.7);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* --- hero --- */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 8rem 3rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+    pointer-events: none;
+  }
+  .blob1 { width: 500px; height: 500px; background: var(--accent2); top: -100px; right: -100px; }
+  .blob2 { width: 350px; height: 350px; background: var(--accent1); bottom: 50px; left: -80px; }
+  .blob3 { width: 300px; height: 300px; background: var(--accent3); top: 40%; left: 40%; }
+
+  .hero-content { position: relative; z-index: 1; max-width: 780px; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(123,47,255,0.15);
+    border: 1px solid rgba(123,47,255,0.3);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem;
+    color: #b99fff;
+    font-weight: 500;
+    margin-bottom: 1.8rem;
+    letter-spacing: 0.05em;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 7px; height: 7px;
+    background: var(--accent3);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .h1-line2 {
+    background: linear-gradient(90deg, var(--accent1) 0%, var(--accent2) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+    font-weight: 300;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-ctas {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 100px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.8rem 2rem;
+    border-radius: 100px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+
+  /* --- scroll indicator --- */
+  .scroll-hint {
+    position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    color: var(--muted); font-size: 0.75rem; letter-spacing: 0.1em;
+    animation: fadeUp 1s 0.8s ease both;
+    z-index: 1;
+  }
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--accent2), transparent);
+    animation: scrollLine 1.5s ease-in-out infinite;
+  }
+  @keyframes scrollLine { 0%{opacity:1;transform:scaleY(1) translateY(0)} 100%{opacity:0;transform:scaleY(0.5) translateY(20px)} }
+
+  /* --- sections --- */
+  section { padding: 6rem 3rem; position: relative; z-index: 1; }
+
+  .section-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 3rem;
+    line-height: 1.1;
+  }
+
+  /* --- skills --- */
+  #skills { background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.8rem;
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: default;
+  }
+  .skill-card:hover { border-color: rgba(255,255,255,0.18); transform: translateY(-4px); }
+
+  .skill-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  .skill-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .skill-card p { color: var(--muted); font-size: 0.9rem; font-weight: 300; }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; }
+  .tag {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  /* --- projects --- */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .project-card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.15); }
+
+  .project-thumb {
+    height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-body { padding: 1.5rem; }
+  .project-body h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .project-body p { color: var(--muted); font-size: 0.88rem; font-weight: 300; line-height: 1.6; }
+
+  .project-links { display: flex; gap: 0.8rem; margin-top: 1.2rem; }
+  .project-link {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 4px 14px;
+    border-radius: 100px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .project-link:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+
+  /* --- contact --- */
+  #contact { text-align: center; }
+  .contact-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 4rem 3rem;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(255,77,109,0.3), rgba(123,47,255,0.3), rgba(0,212,170,0.3));
+    z-index: -1;
+    opacity: 0.6;
+  }
+
+  .contact-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+  }
+  .contact-card p { color: var(--muted); margin-bottom: 2rem; font-weight: 300; }
+
+  .social-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+  .social-link {
+    width: 44px; height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .social-link:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-3px); }
+
+  /* --- footer --- */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--muted); font-size: 0.82rem;
+    position: relative; z-index: 1;
+  }
+
+  /* --- animations --- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* --- responsive --- */
+  @media (max-width: 640px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #hero { padding: 7rem 1.5rem 4rem; }
+    section { padding: 4rem 1.5rem; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">&lt;Sky Voyage /&gt;</span>
+  <ul class="nav-links">
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-blob blob1"></div>
+  <div class="hero-blob blob2"></div>
+  <div class="hero-blob blob3"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">Available for work</div>
+    <h1>
+      Creative<br>
+      <span class="h1-line2">Web Developer</span>
+    </h1>
+    <p class="hero-desc">
+      Main websites aur web apps banata hoon jo dekhne mein bhi khoobsurat hain aur kaam bhi zabardast karte hain. Clean code, modern design.
+    </p>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn-primary">Mera kaam dekho</a>
+      <a href="#contact" class="btn-ghost">Contact karo</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">What I do</div>
+  <h2>Meri Skills</h2>
+
+  <div class="skills-grid">
+    <div class="skill-card fade-in">
+      <div class="skill-icon" style="background:rgba(255,77,109,0.15);">🎨</div>
+      <h3>Frontend Development</h3>
+      <p>Beautiful, responsive interfaces jo har screen par acha lagta hai.</p>
+      <div class="tag-list">
+        <span class="tag" style="background:rgba(255,77,109,0.12);color:#ff7a94;">HTML</span>
+        <span class="tag" style="background:rgba(255,77,109,0.12);color:#ff7a94;">CSS</span>
+        <span class="tag" style="background:rgba(255,77,109,0.12);color:#ff7a94;">JavaScript</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in">
+      <div class="skill-icon" style="background:rgba(123,47,255,0.15);">⚛️</div>
+      <h3>Modern Frameworks</h3>
+      <p>Fast aur scalable apps ke liye latest technologies.</p>
+      <div class="tag-list">
+        <span class="tag" style="background:rgba(123,47,255,0.12);color:#b99fff;">React</span>
+        <span class="tag" style="background:rgba(123,47,255,0.12);color:#b99fff;">Next.js</span>
+        <span class="tag" style="background:rgba(123,47,255,0.12);color:#b99fff;">Vue</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in">
+      <div class="skill-icon" style="background:rgba(0,212,170,0.15);">🛠️</div>
+      <h3>Backend & Tools</h3>
+      <p>Server side bhi sambhal leta hoon, databases bhi.</p>
+      <div class="tag-list">
+        <span class="tag" style="background:rgba(0,212,170,0.12);color:#00d4aa;">Node.js</span>
+        <span class="tag" style="background:rgba(0,212,170,0.12);color:#00d4aa;">Git</span>
+        <span class="tag" style="background:rgba(0,212,170,0.12);color:#00d4aa;">MongoDB</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">My Work</div>
+  <h2>Projects</h2>
+
+  <div class="projects-grid">
+    <div class="project-card fade-in">
+      <div class="project-thumb" style="background:linear-gradient(135deg,rgba(255,77,109,0.2),rgba(123,47,255,0.2));">🛒</div>
+      <div class="project-body">
+        <h3>E-Commerce Website</h3>
+        <p>Ek full shopping website jisme products, cart aur checkout sab kuch hai.</p>
+        <div class="tag-list">
+          <span class="tag" style="background:rgba(255,179,71,0.12);color:#ffb347;">React</span>
+          <span class="tag" style="background:rgba(255,179,71,0.12);color:#ffb347;">Node.js</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="project-link">Live Demo</a>
+          <a href="#" class="project-link">GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="project-thumb" style="background:linear-gradient(135deg,rgba(0,212,170,0.2),rgba(123,47,255,0.2));">📊</div>
+      <div class="project-body">
+        <h3>Analytics Dashboard</h3>
+        <p>Real-time data visualize karne ka dashboard — charts, graphs, stats sab.</p>
+        <div class="tag-list">
+          <span class="tag" style="background:rgba(0,212,170,0.12);color:#00d4aa;">Next.js</span>
+          <span class="tag" style="background:rgba(0,212,170,0.12);color:#00d4aa;">Chart.js</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="project-link">Live Demo</a>
+          <a href="#" class="project-link">GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="project-thumb" style="background:linear-gradient(135deg,rgba(255,179,71,0.2),rgba(255,77,109,0.2));">💬</div>
+      <div class="project-body">
+        <h3>Chat App</h3>
+        <p>Real-time messaging app — bilkul WhatsApp jaisi feel, apne code se bani.</p>
+        <div class="tag-list">
+          <span class="tag" style="background:rgba(255,77,109,0.12);color:#ff7a94;">Socket.io</span>
+          <span class="tag" style="background:rgba(255,77,109,0.12);color:#ff7a94;">Node.js</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="project-link">Live Demo</a>
+          <a href="#" class="project-link">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">Get in touch</div>
+  <div class="contact-card fade-in">
+    <h3>Kaam karein saath? 🤝</h3>
+    <p>Koi project hai ya sirf baat karni hai — dono ke liye available hoon!</p>
+    <a href="mailto:info@skyvoyage.co.uk" class="btn-primary">Email karo</a>
+    <div class="social-links">
+      <a href="#" class="social-link" title="GitHub">GH</a>
+      <a href="#" class="social-link" title="LinkedIn">in</a>
+      <a href="#" class="social-link" title="Twitter">TW</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Made with ❤️ by Sky Voyage</span>
+  <span>2025</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 100);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
